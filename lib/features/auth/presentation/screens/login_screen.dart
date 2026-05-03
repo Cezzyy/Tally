@@ -97,7 +97,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Text(
                     'Sign in to continue',
                     style: context.textTheme.bodyLarge?.copyWith(
-                      color: context.colorScheme.onSurface.withValues(alpha: 0.6),
+                      color: context.colorScheme.onSurface.withValues(
+                        alpha: 0.6,
+                      ),
                     ),
                     textAlign: TextAlign.center,
                   ),

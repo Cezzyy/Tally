@@ -97,13 +97,15 @@ class HomeScreen extends ConsumerWidget {
                         _QuickStartItem(
                           icon: Icons.confirmation_number_outlined,
                           title: 'Create Tickets',
-                          description: 'Navigate to Tickets to create your first task',
+                          description:
+                              'Navigate to Tickets to create your first task',
                         ),
                         const SizedBox(height: 12),
                         _QuickStartItem(
                           icon: Icons.checklist_outlined,
                           title: 'Add Checklists',
-                          description: 'Break down tasks into manageable sub-items',
+                          description:
+                              'Break down tasks into manageable sub-items',
                         ),
                         const SizedBox(height: 12),
                         _QuickStartItem(
@@ -140,11 +142,7 @@ class _QuickStartItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: context.colorScheme.secondary,
-        ),
+        Icon(icon, size: 20, color: context.colorScheme.secondary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(

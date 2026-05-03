@@ -12,11 +12,7 @@ class HomeShell extends ConsumerStatefulWidget {
   final Widget child;
   final int currentIndex;
 
-  const HomeShell({
-    super.key,
-    required this.child,
-    required this.currentIndex,
-  });
+  const HomeShell({super.key, required this.child, required this.currentIndex});
 
   @override
   ConsumerState<HomeShell> createState() => _HomeShellState();
@@ -64,9 +60,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   void _showLogsScreen() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => TalkerScreen(
-          talker: AppLogger.talker,
-        ),
+        builder: (context) => TalkerScreen(talker: AppLogger.talker),
       ),
     );
   }

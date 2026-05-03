@@ -56,10 +56,7 @@ GoRouter goRouter(Ref ref) {
           } else if (currentPath.startsWith('/settings')) {
             currentIndex = 2;
           }
-          return HomeShell(
-            currentIndex: currentIndex,
-            child: child,
-          );
+          return HomeShell(currentIndex: currentIndex, child: child);
         },
         routes: [
           GoRoute(
