@@ -48,7 +48,7 @@ final class AuthRepositoryProvider
   }
 }
 
-String _$authRepositoryHash() => r'e3b22fd7863ea1be0b322870da43112c60f80087';
+String _$authRepositoryHash() => r'19a3485653561ac2f781b997131430c5659286d1';
 
 @ProviderFor(authStateChanges)
 final authStateChangesProvider = AuthStateChangesProvider._();
@@ -82,7 +82,7 @@ final class AuthStateChangesProvider
   }
 }
 
-String _$authStateChangesHash() => r'65738129663d834865108ed4db6f7e2f444285af';
+String _$authStateChangesHash() => r'd7a237f23cdb5bbe6b8e8bee05ceb7688f8dc012';
 
 @ProviderFor(AuthController)
 final authControllerProvider = AuthControllerProvider._();
@@ -108,7 +108,7 @@ final class AuthControllerProvider
   AuthController create() => AuthController();
 }
 
-String _$authControllerHash() => r'3f3f82ad012d244e7bc7cf8b6dfac9542d2e4cfc';
+String _$authControllerHash() => r'2910f9aed5446a4772b158ecb0795c1de76e382e';
 
 abstract class _$AuthController extends $AsyncNotifier<User?> {
   FutureOr<User?> build();

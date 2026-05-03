@@ -5,6 +5,9 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/home/presentation/screens/home_shell.dart';
+import '../../features/tickets/presentation/screens/tickets_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../logging/app_logger.dart';
 
 part 'app_router.g.dart';
@@ -44,10 +47,37 @@ GoRouter goRouter(Ref ref) {
         name: 'signup',
         builder: (context, state) => const SignupScreen(),
       ),
-      GoRoute(
-        path: '/',
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
+      ShellRoute(
+        builder: (context, state, child) {
+          final currentPath = state.matchedLocation;
+          int currentIndex = 0;
+          if (currentPath.startsWith('/tickets')) {
+            currentIndex = 1;
+          } else if (currentPath.startsWith('/settings')) {
+            currentIndex = 2;
+          }
+          return HomeShell(
+            currentIndex: currentIndex,
+            child: child,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: '/',
+            name: 'home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/tickets',
+            name: 'tickets',
+            builder: (context, state) => const TicketsScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

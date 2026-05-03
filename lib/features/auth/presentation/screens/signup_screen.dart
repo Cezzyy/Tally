@@ -119,7 +119,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   Text(
                     'Sign up to get started',
                     style: context.textTheme.bodyLarge?.copyWith(
-                      color: context.colorScheme.onSurface.withOpacity(0.6),
+                      color: context.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     textAlign: TextAlign.center,
                   ),
