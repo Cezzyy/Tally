@@ -66,9 +66,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(context.isMobile ? 16.0 : 24.0),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
+            constraints: BoxConstraints(
+              maxWidth: context.isMobile ? double.infinity : 400,
+            ),
             child: Form(
               key: _formKey,
               autovalidateMode: _autoValidate
@@ -80,26 +82,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   Icon(
                     Icons.check_circle_outline,
-                    size: 80,
+                    size: context.isMobile ? 64 : 80,
                     color: context.colorScheme.primary,
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.isMobile ? 16 : 24),
                   Text(
                     'Welcome to Tally',
-                    style: context.textTheme.headlineMedium,
+                    style: context.isMobile
+                        ? context.textTheme.headlineSmall
+                        : context.textTheme.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Sign in to continue',
                     style: context.textTheme.bodyLarge?.copyWith(
-                      color: context.colorScheme.onSurface.withValues(
-                        alpha: 0.6,
-                      ),
+                      color: context.colorScheme.onSurface.withOpacity(0.6),
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
+                  SizedBox(height: context.isMobile ? 32 : 48),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -153,18 +155,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: isLoading ? null : _handleLogin,
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Sign In'),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.isMobile ? 12.0 : 16.0,
+                      ),
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Sign In'),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   OutlinedButton(
                     onPressed: isLoading ? null : () => context.go('/signup'),
-                    child: const Text('Create Account'),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.isMobile ? 12.0 : 16.0,
+                      ),
+                      child: const Text('Create Account'),
+                    ),
                   ),
                 ],
               ),
