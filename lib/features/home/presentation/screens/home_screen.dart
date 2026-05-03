@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:talker_flutter/talker_flutter.dart';
+import '../../../../core/logging/app_logger.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,6 +12,22 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Tally'),
         centerTitle: false,
+        actions: [
+          if (kDebugMode)
+            IconButton(
+              icon: const Icon(Icons.bug_report),
+              tooltip: 'View Logs',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => TalkerScreen(
+                      talker: AppLogger.talker,
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: Center(
         child: Column(
