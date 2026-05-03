@@ -66,7 +66,11 @@ class AppLogger {
     talker.log(message);
   }
 
-  void logException(Object exception, [StackTrace? stackTrace, String? message]) {
+  void logException(
+    Object exception, [
+    StackTrace? stackTrace,
+    String? message,
+  ]) {
     talker.handle(exception, stackTrace, message);
   }
 

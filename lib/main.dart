@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app.dart';
-import 'core/config/env_config.dart';
-import 'core/logging/app_logger.dart';
-import 'core/services/supabase_service.dart';
+import 'package:tally/app.dart';
+import 'package:tally/core/config/env_config.dart';
+import 'package:tally/core/logging/app_logger.dart';
+import 'package:tally/core/services/supabase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,13 +1,13 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../config/env_config.dart';
-import '../logging/app_logger.dart';
+import 'package:tally/core/config/env_config.dart';
+import 'package:tally/core/logging/app_logger.dart';
 
 class SupabaseService {
   static SupabaseClient? _client;
 
   static Future<void> initialize() async {
     AppLogger.instance.info('Initializing Supabase');
-    
+
     try {
       await Supabase.initialize(
         url: EnvConfig.supabaseUrl,

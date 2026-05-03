@@ -4,11 +4,7 @@ class ErrorDisplay extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const ErrorDisplay({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorDisplay({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +20,7 @@ class ErrorDisplay extends StatelessWidget {
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(height: 16),
-            Text(
-              'Oops!',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            Text('Oops!', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
               message,
