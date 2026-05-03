@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/signup_screen.dart';
+import '../../features/auth/providers/auth_provider.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../logging/app_logger.dart';
 
@@ -8,11 +11,39 @@ part 'app_router.g.dart';
 
 @riverpod
 GoRouter goRouter(Ref ref) {
+  ref.watch(authStateChangesProvider);
+
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/login',
     debugLogDiagnostics: true,
     observers: [_LoggingNavigatorObserver()],
+    redirect: (context, state) {
+      final isAuthenticated = ref.read(authRepositoryProvider).isAuthenticated;
+      final isAuthRoute =
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/signup';
+
+      if (!isAuthenticated && !isAuthRoute) {
+        return '/login';
+      }
+
+      if (isAuthenticated && isAuthRoute) {
+        return '/';
+      }
+
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignupScreen(),
+      ),
       GoRoute(
         path: '/',
         name: 'home',

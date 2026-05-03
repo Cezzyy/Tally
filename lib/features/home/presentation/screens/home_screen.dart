@@ -1,13 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:talker_flutter/talker_flutter.dart';
-import 'package:tally/core/logging/app_logger.dart';
+import '../../../../core/logging/app_logger.dart';
+import '../../../auth/providers/auth_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authRepositoryProvider).currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tally'),
@@ -26,6 +31,15 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign Out',
+            onPressed: () async {
+              await ref.read(authControllerProvider.notifier).signOut();
+              if (!context.mounted) return;
+              context.go('/login');
+            },
+          ),
         ],
       ),
       body: Center(
@@ -51,6 +65,20 @@ class HomeScreen extends StatelessWidget {
                 ).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
+            if (user != null) ...[
+              const SizedBox(height: 24),
+              Text(
+                'Signed in as:',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                user.email ?? 'Unknown',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
           ],
         ),
       ),
