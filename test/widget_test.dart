@@ -1,30 +1,31 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:tally/main.dart';
+import 'package:tally/app.dart';
+import 'package:tally/core/logging/app_logger.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await AppLogger.initialize();
+    await dotenv.load(fileName: '.env');
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('App smoke test - renders home screen', (WidgetTester tester) async {
+    await tester.pumpWidget(const ProviderScope(child: TallyApp()));
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    expect(find.text('Tally'), findsOneWidget);
+    expect(find.text('Welcome to Tally'), findsOneWidget);
+    expect(find.text('Your personal ticketing system'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('Debug mode shows log viewer button', (WidgetTester tester) async {
+    await tester.pumpWidget(const ProviderScope(child: TallyApp()));
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.bug_report), findsOneWidget);
   });
 }
