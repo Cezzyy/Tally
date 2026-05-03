@@ -12,7 +12,9 @@ void main() {
     await dotenv.load(fileName: '.env');
   });
 
-  testWidgets('App smoke test - renders home screen', (WidgetTester tester) async {
+  testWidgets('App smoke test - renders home screen', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: TallyApp()));
     await tester.pumpAndSettle();
 
@@ -22,14 +24,18 @@ void main() {
     expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
   });
 
-  testWidgets('Debug mode shows log viewer button', (WidgetTester tester) async {
+  testWidgets('Debug mode shows log viewer button', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: TallyApp()));
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.bug_report), findsOneWidget);
   });
 
-  testWidgets('Navigation to non-existent route shows error page', (WidgetTester tester) async {
+  testWidgets('Navigation to non-existent route shows error page', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: TallyApp()));
     await tester.pumpAndSettle();
 
