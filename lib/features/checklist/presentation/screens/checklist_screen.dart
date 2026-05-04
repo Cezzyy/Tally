@@ -216,27 +216,25 @@ class _ChecklistScreenState extends ConsumerState<ChecklistScreen> {
   }
 
   void _showCreateChecklistDialog(BuildContext context) {
-    showDialog(
+    ChecklistFormDialog.show(
       context: context,
-      builder: (context) => ChecklistFormDialog(
-        onSubmit: (dto) async {
-          final navigator = Navigator.of(context);
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
+      onSubmit: (dto) async {
+        final navigator = Navigator.of(context);
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-          await ref
-              .read(
-                checklistsProvider(includeArchived: _includeArchived).notifier,
-              )
-              .createChecklist(dto);
+        await ref
+            .read(
+              checklistsProvider(includeArchived: _includeArchived).notifier,
+            )
+            .createChecklist(dto);
 
-          if (mounted) {
-            navigator.pop();
-            scaffoldMessenger.showSnackBar(
-              const SnackBar(content: Text('Checklist created successfully')),
-            );
-          }
-        },
-      ),
+        if (mounted) {
+          navigator.pop();
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(content: Text('Checklist created successfully')),
+          );
+        }
+      },
     );
   }
 
@@ -244,31 +242,26 @@ class _ChecklistScreenState extends ConsumerState<ChecklistScreen> {
     BuildContext context,
     ChecklistWithStats checklistWithStats,
   ) {
-    showDialog(
+    ChecklistFormDialog.show(
       context: context,
-      builder: (context) => ChecklistFormDialog(
-        checklist: checklistWithStats.checklist,
-        onSubmit: (dto) async {
-          final navigator = Navigator.of(context);
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
+      checklist: checklistWithStats.checklist,
+      onSubmit: (dto) async {
+        final navigator = Navigator.of(context);
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-          await ref
-              .read(
-                checklistsProvider(includeArchived: _includeArchived).notifier,
-              )
-              .updateChecklist(
-                checklistWithStats.id,
-                dto as UpdateChecklistDto,
-              );
+        await ref
+            .read(
+              checklistsProvider(includeArchived: _includeArchived).notifier,
+            )
+            .updateChecklist(checklistWithStats.id, dto as UpdateChecklistDto);
 
-          if (mounted) {
-            navigator.pop();
-            scaffoldMessenger.showSnackBar(
-              const SnackBar(content: Text('Checklist updated successfully')),
-            );
-          }
-        },
-      ),
+        if (mounted) {
+          navigator.pop();
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(content: Text('Checklist updated successfully')),
+          );
+        }
+      },
     );
   }
 

@@ -14,6 +14,36 @@ class ChecklistFormDialog extends StatefulWidget {
     required this.onSubmit,
   });
 
+  static Future<T?> show<T>({
+    required BuildContext context,
+    Checklist? checklist,
+    required Future<void> Function(dynamic) onSubmit,
+  }) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
+    if (isMobile) {
+      return showModalBottomSheet<T>(
+        context: context,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        showDragHandle: true,
+        useSafeArea: true,
+        builder: (context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: ChecklistFormDialog(checklist: checklist, onSubmit: onSubmit),
+        ),
+      );
+    } else {
+      return showDialog<T>(
+        context: context,
+        builder: (context) =>
+            ChecklistFormDialog(checklist: checklist, onSubmit: onSubmit),
+      );
+    }
+  }
+
   @override
   State<ChecklistFormDialog> createState() => _ChecklistFormDialogState();
 }
@@ -52,183 +82,188 @@ class _ChecklistFormDialogState extends State<ChecklistFormDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: context.isMobile
-              ? double.infinity
-              : AppConstants.maxFormWidth,
-          maxHeight: MediaQuery.of(context).size.height * 0.9,
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(context.isMobile ? 16.0 : 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final isMobile = context.isMobile;
+    final content = Padding(
+      padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _isEditing ? 'Edit Checklist' : 'Create Checklist',
-                      style: context.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFormField(
-                          controller: _titleController,
-                          decoration: const InputDecoration(
-                            labelText: 'Title',
-                            hintText: 'Enter checklist title',
-                            border: OutlineInputBorder(),
-                          ),
-                          maxLength: AppConstants.maxTitleLength,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Title is required';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _descriptionController,
-                          decoration: const InputDecoration(
-                            labelText: 'Description (Optional)',
-                            hintText: 'Enter checklist description',
-                            border: OutlineInputBorder(),
-                            alignLabelWithHint: true,
-                          ),
-                          maxLines: 5,
-                          maxLength: AppConstants.maxDescriptionLength,
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<ChecklistStatus>(
-                          initialValue: _status,
-                          decoration: const InputDecoration(
-                            labelText: 'Status',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: ChecklistStatus.values.map((status) {
-                            return DropdownMenuItem(
-                              value: status,
-                              child: Text(_getStatusLabel(status)),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() => _status = value);
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<ChecklistPriority>(
-                          initialValue: _priority,
-                          decoration: const InputDecoration(
-                            labelText: 'Priority',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: ChecklistPriority.values.map((priority) {
-                            return DropdownMenuItem(
-                              value: priority,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: _getPriorityColor(priority),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(_getPriorityLabel(priority)),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() => _priority = value);
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        InkWell(
-                          onTap: _selectDueDate,
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              labelText: 'Due Date (Optional)',
-                              border: OutlineInputBorder(),
-                              suffixIcon: Icon(Icons.calendar_today_outlined),
-                            ),
-                            child: Text(
-                              _dueDate == null
-                                  ? 'Select due date'
-                                  : DateFormat('MMM d, y').format(_dueDate!),
-                              style: _dueDate == null
-                                  ? context.textTheme.bodyMedium?.copyWith(
-                                      color: context.colorScheme.onSurface
-                                          .withValues(alpha: 0.6),
-                                    )
-                                  : null,
-                            ),
-                          ),
-                        ),
-                        if (_dueDate != null) ...[
-                          const SizedBox(height: 8),
-                          TextButton.icon(
-                            onPressed: () => setState(() => _dueDate = null),
-                            icon: const Icon(Icons.clear, size: 16),
-                            label: const Text('Clear due date'),
-                          ),
-                        ],
-                      ],
-                    ),
+              Expanded(
+                child: Text(
+                  _isEditing ? 'Edit Checklist' : 'Create Checklist',
+                  style: context.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: _isSubmitting
-                        ? null
-                        : () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
-                  ),
-                  const SizedBox(width: 12),
-                  FilledButton(
-                    onPressed: _isSubmitting ? null : _handleSubmit,
-                    child: _isSubmitting
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(_isEditing ? 'Update' : 'Create'),
-                  ),
-                ],
+              IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close),
               ),
             ],
           ),
+          const SizedBox(height: 24),
+          Flexible(
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Title',
+                        hintText: 'Enter checklist title',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLength: AppConstants.maxTitleLength,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Title is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description (Optional)',
+                        hintText: 'Enter checklist description',
+                        border: OutlineInputBorder(),
+                        alignLabelWithHint: true,
+                      ),
+                      maxLines: 5,
+                      maxLength: AppConstants.maxDescriptionLength,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<ChecklistStatus>(
+                      initialValue: _status,
+                      decoration: const InputDecoration(
+                        labelText: 'Status',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: ChecklistStatus.values.map((status) {
+                        return DropdownMenuItem(
+                          value: status,
+                          child: Text(_getStatusLabel(status)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _status = value);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<ChecklistPriority>(
+                      initialValue: _priority,
+                      decoration: const InputDecoration(
+                        labelText: 'Priority',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: ChecklistPriority.values.map((priority) {
+                        return DropdownMenuItem(
+                          value: priority,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: _getPriorityColor(priority),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(_getPriorityLabel(priority)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _priority = value);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    InkWell(
+                      onTap: _selectDueDate,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Due Date (Optional)',
+                          border: OutlineInputBorder(),
+                          suffixIcon: Icon(Icons.calendar_today_outlined),
+                        ),
+                        child: Text(
+                          _dueDate == null
+                              ? 'Select due date'
+                              : DateFormat('MMM d, y').format(_dueDate!),
+                          style: _dueDate == null
+                              ? context.textTheme.bodyMedium?.copyWith(
+                                  color: context.colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                    if (_dueDate != null) ...[
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => setState(() => _dueDate = null),
+                        icon: const Icon(Icons.clear, size: 16),
+                        label: const Text('Clear due date'),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: _isSubmitting
+                    ? null
+                    : () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              const SizedBox(width: 12),
+              FilledButton(
+                onPressed: _isSubmitting ? null : _handleSubmit,
+                child: _isSubmitting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(_isEditing ? 'Update' : 'Create'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    if (isMobile) {
+      return content;
+    }
+
+    return Dialog(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: AppConstants.maxFormWidth,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
+        child: content,
       ),
     );
   }
