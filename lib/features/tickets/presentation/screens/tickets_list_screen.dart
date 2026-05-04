@@ -255,6 +255,7 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
 
   Future<void> _confirmDelete(BuildContext context, Ticket ticket) async {
     final colorScheme = Theme.of(context).colorScheme;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -281,31 +282,33 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
           .deleteTicket(ticket.id);
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Ticket deleted')));
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Ticket deleted')),
+        );
       }
     }
   }
 
   Future<void> _toggleArchive(Ticket ticket) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     if (ticket.isArchived) {
       await ref
           .read(ticketsProvider(includeArchived: _includeArchived).notifier)
           .unarchiveTicket(ticket.id);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Ticket unarchived')));
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Ticket unarchived')),
+        );
       }
     } else {
       await ref
           .read(ticketsProvider(includeArchived: _includeArchived).notifier)
           .archiveTicket(ticket.id);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Ticket archived')));
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Ticket archived')),
+        );
       }
     }
   }
