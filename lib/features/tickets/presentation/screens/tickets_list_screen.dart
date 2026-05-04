@@ -203,49 +203,45 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
   }
 
   void _showCreateTicketDialog(BuildContext context) {
-    showDialog(
+    TicketFormDialog.show(
       context: context,
-      builder: (context) => TicketFormDialog(
-        onSubmit: (dto) async {
-          final navigator = Navigator.of(context);
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
+      onSubmit: (dto) async {
+        final navigator = Navigator.of(context);
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-          await ref
-              .read(ticketsProvider(includeArchived: _includeArchived).notifier)
-              .createTicket(dto);
+        await ref
+            .read(ticketsProvider(includeArchived: _includeArchived).notifier)
+            .createTicket(dto);
 
-          if (mounted) {
-            navigator.pop();
-            scaffoldMessenger.showSnackBar(
-              const SnackBar(content: Text('Ticket created successfully')),
-            );
-          }
-        },
-      ),
+        if (mounted) {
+          navigator.pop();
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(content: Text('Ticket created successfully')),
+          );
+        }
+      },
     );
   }
 
   void _showEditTicketDialog(BuildContext context, Ticket ticket) {
-    showDialog(
+    TicketFormDialog.show(
       context: context,
-      builder: (context) => TicketFormDialog(
-        ticket: ticket,
-        onSubmit: (dto) async {
-          final navigator = Navigator.of(context);
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
+      ticket: ticket,
+      onSubmit: (dto) async {
+        final navigator = Navigator.of(context);
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-          await ref
-              .read(ticketsProvider(includeArchived: _includeArchived).notifier)
-              .updateTicket(ticket.id, dto as UpdateTicketDto);
+        await ref
+            .read(ticketsProvider(includeArchived: _includeArchived).notifier)
+            .updateTicket(ticket.id, dto as UpdateTicketDto);
 
-          if (mounted) {
-            navigator.pop();
-            scaffoldMessenger.showSnackBar(
-              const SnackBar(content: Text('Ticket updated successfully')),
-            );
-          }
-        },
-      ),
+        if (mounted) {
+          navigator.pop();
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(content: Text('Ticket updated successfully')),
+          );
+        }
+      },
     );
   }
 
