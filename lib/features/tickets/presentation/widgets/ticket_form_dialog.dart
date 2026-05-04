@@ -265,20 +265,13 @@ class _TicketFormDialogState extends State<TicketFormDialog> {
         );
         await widget.onSubmit(dto);
       }
-
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSubmitting = false);
         context.showSnackBar(
           'Failed to ${_isEditing ? 'update' : 'create'} ticket',
           isError: true,
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isSubmitting = false);
       }
     }
   }
