@@ -113,7 +113,7 @@ class _TicketFormDialogState extends State<TicketFormDialog> {
                         ),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<TicketStatus>(
-                          value: _status,
+                          initialValue: _status,
                           decoration: const InputDecoration(
                             labelText: 'Status',
                             border: OutlineInputBorder(),
@@ -132,7 +132,7 @@ class _TicketFormDialogState extends State<TicketFormDialog> {
                         ),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<TicketPriority>(
-                          value: _priority,
+                          initialValue: _priority,
                           decoration: const InputDecoration(
                             labelText: 'Priority',
                             border: OutlineInputBorder(),

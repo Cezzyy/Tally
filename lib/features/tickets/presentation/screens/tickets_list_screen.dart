@@ -146,27 +146,59 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
                 ],
               ),
               SizedBox(height: context.isMobile ? 16 : 24),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: tickets.length,
-                separatorBuilder: (context, index) =>
-                    SizedBox(height: context.isMobile ? 12 : 16),
-                itemBuilder: (context, index) {
-                  final ticket = tickets[index];
-                  return TicketCard(
-                    ticket: ticket,
-                    onTap: () => _showTicketDetails(context, ticket),
-                    onEdit: () => _showEditTicketDialog(context, ticket),
-                    onDelete: () => _confirmDelete(context, ticket),
-                    onArchive: () => _toggleArchive(ticket),
-                  );
-                },
-              ),
+              context.isMobile
+                  ? _buildListView(context, tickets)
+                  : _buildGridView(context, tickets),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildListView(BuildContext context, List<Ticket> tickets) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: tickets.length,
+      separatorBuilder: (context, index) =>
+          SizedBox(height: context.isMobile ? 12 : 16),
+      itemBuilder: (context, index) {
+        final ticket = tickets[index];
+        return TicketCard(
+          ticket: ticket,
+          onTap: () => _showTicketDetails(context, ticket),
+          onEdit: () => _showEditTicketDialog(context, ticket),
+          onDelete: () => _confirmDelete(context, ticket),
+          onArchive: () => _toggleArchive(ticket),
+        );
+      },
+    );
+  }
+
+  Widget _buildGridView(BuildContext context, List<Ticket> tickets) {
+    final crossAxisCount = context.isDesktop ? 4 : (context.isTablet ? 3 : 2);
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        mainAxisExtent: 280,
+      ),
+      itemCount: tickets.length,
+      itemBuilder: (context, index) {
+        final ticket = tickets[index];
+        return TicketCard(
+          ticket: ticket,
+          onTap: () => _showTicketDetails(context, ticket),
+          onEdit: () => _showEditTicketDialog(context, ticket),
+          onDelete: () => _confirmDelete(context, ticket),
+          onArchive: () => _toggleArchive(ticket),
+        );
+      },
     );
   }
 
@@ -175,11 +207,18 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
       context: context,
       builder: (context) => TicketFormDialog(
         onSubmit: (dto) async {
+          final navigator = Navigator.of(context);
+          final scaffoldMessenger = ScaffoldMessenger.of(context);
+
           await ref
               .read(ticketsProvider(includeArchived: _includeArchived).notifier)
               .createTicket(dto);
+
           if (mounted) {
-            context.showSnackBar('Ticket created successfully');
+            navigator.pop();
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(content: Text('Ticket created successfully')),
+            );
           }
         },
       ),
@@ -192,11 +231,18 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
       builder: (context) => TicketFormDialog(
         ticket: ticket,
         onSubmit: (dto) async {
+          final navigator = Navigator.of(context);
+          final scaffoldMessenger = ScaffoldMessenger.of(context);
+
           await ref
               .read(ticketsProvider(includeArchived: _includeArchived).notifier)
               .updateTicket(ticket.id, dto as UpdateTicketDto);
+
           if (mounted) {
-            context.showSnackBar('Ticket updated successfully');
+            navigator.pop();
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(content: Text('Ticket updated successfully')),
+            );
           }
         },
       ),
@@ -208,6 +254,8 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
   }
 
   Future<void> _confirmDelete(BuildContext context, Ticket ticket) async {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -220,9 +268,7 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: context.colorScheme.error,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
             child: const Text('Delete'),
           ),
         ],
@@ -233,8 +279,11 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
       await ref
           .read(ticketsProvider(includeArchived: _includeArchived).notifier)
           .deleteTicket(ticket.id);
+
       if (mounted) {
-        context.showSnackBar('Ticket deleted');
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Ticket deleted')));
       }
     }
   }
@@ -245,14 +294,18 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
           .read(ticketsProvider(includeArchived: _includeArchived).notifier)
           .unarchiveTicket(ticket.id);
       if (mounted) {
-        context.showSnackBar('Ticket unarchived');
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Ticket unarchived')));
       }
     } else {
       await ref
           .read(ticketsProvider(includeArchived: _includeArchived).notifier)
           .archiveTicket(ticket.id);
       if (mounted) {
-        context.showSnackBar('Ticket archived');
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Ticket archived')));
       }
     }
   }
