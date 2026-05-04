@@ -6,7 +6,6 @@ import 'package:talker_flutter/talker_flutter.dart';
 import '../../../../core/logging/app_logger.dart';
 import '../../../../shared/extensions/context_extensions.dart';
 import '../../../../shared/widgets/responsive_layout_shell.dart';
-import '../../../auth/providers/auth_provider.dart';
 
 class HomeShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -59,12 +58,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     }
   }
 
-  Future<void> _handleSignOut() async {
-    await ref.read(authControllerProvider.notifier).signOut();
-    if (!mounted) return;
-    context.go('/login');
-  }
-
   void _showLogsScreen() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -75,8 +68,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authRepositoryProvider).currentUser;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tally'),
@@ -88,21 +79,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               tooltip: 'View Logs',
               onPressed: _showLogsScreen,
             ),
-          if (user != null && !context.isMobile)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Center(
-                child: Text(
-                  user.email ?? '',
-                  style: context.textTheme.bodySmall,
-                ),
-              ),
-            ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sign Out',
-            onPressed: _handleSignOut,
-          ),
           if (!context.isMobile) const SizedBox(width: 8),
         ],
       ),
