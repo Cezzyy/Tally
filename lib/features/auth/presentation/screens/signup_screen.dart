@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/extensions/context_extensions.dart';
 import '../../providers/auth_provider.dart';
@@ -91,7 +92,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           padding: EdgeInsets.all(context.isMobile ? 16.0 : 24.0),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: context.isMobile ? double.infinity : 400,
+              maxWidth: context.isMobile
+                  ? double.infinity
+                  : AppConstants.maxFormWidth,
             ),
             child: Form(
               key: _formKey,
