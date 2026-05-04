@@ -78,6 +78,14 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Future<bool?> _showSignOutDialog(BuildContext context) {
+    if (context.isMobile) {
+      return _showSignOutBottomSheet(context);
+    } else {
+      return _showSignOutAlertDialog(context);
+    }
+  }
+
+  Future<bool?> _showSignOutAlertDialog(BuildContext context) {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -93,6 +101,50 @@ class SettingsScreen extends ConsumerWidget {
             child: const Text('Sign Out'),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<bool?> _showSignOutBottomSheet(BuildContext context) {
+    return showModalBottomSheet<bool>(
+      context: context,
+      useRootNavigator: true,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Sign Out',
+                style: context.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Are you sure you want to sign out?',
+                style: context.textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Sign Out'),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
