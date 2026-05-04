@@ -6,4 +6,7 @@ class AppConstants {
   static const int maxTitleLength = 200;
   static const int maxDescriptionLength = 2000;
   static const int maxChecklistItemLength = 500;
+
+  static const double maxContentWidth = 1400;
+  static const double maxFormWidth = 600;
 }

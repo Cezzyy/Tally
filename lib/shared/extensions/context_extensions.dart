@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/breakpoints.dart';
 
 extension ContextExtensions on BuildContext {
   ThemeData get theme => Theme.of(this);
@@ -13,11 +14,11 @@ extension ContextExtensions on BuildContext {
 
   double get screenHeight => screenSize.height;
 
-  bool get isMobile => screenWidth < 600;
+  bool get isMobile => Breakpoints.isMobile(screenWidth);
 
-  bool get isTablet => screenWidth >= 600 && screenWidth < 1200;
+  bool get isTablet => Breakpoints.isTablet(screenWidth);
 
-  bool get isDesktop => screenWidth >= 1200;
+  bool get isDesktop => Breakpoints.isDesktop(screenWidth);
 
   void showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(this).showSnackBar(
