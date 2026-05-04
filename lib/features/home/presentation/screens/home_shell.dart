@@ -31,6 +31,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       label: 'Tickets',
     ),
     const NavigationDestination(
+      icon: Icon(Icons.checklist_outlined),
+      selectedIcon: Icon(Icons.checklist),
+      label: 'Checklist',
+    ),
+    const NavigationDestination(
       icon: Icon(Icons.settings_outlined),
       selectedIcon: Icon(Icons.settings),
       label: 'Settings',
@@ -46,6 +51,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         context.go('/tickets');
         break;
       case 2:
+        context.go('/checklist');
+        break;
+      case 3:
         context.go('/settings');
         break;
     }

@@ -7,6 +7,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/home_shell.dart';
 import '../../features/tickets/presentation/screens/tickets_screen.dart';
+import '../../features/checklist/presentation/screens/checklist_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../logging/app_logger.dart';
 
@@ -53,8 +54,10 @@ GoRouter goRouter(Ref ref) {
           int currentIndex = 0;
           if (currentPath.startsWith('/tickets')) {
             currentIndex = 1;
-          } else if (currentPath.startsWith('/settings')) {
+          } else if (currentPath.startsWith('/checklist')) {
             currentIndex = 2;
+          } else if (currentPath.startsWith('/settings')) {
+            currentIndex = 3;
           }
           return HomeShell(currentIndex: currentIndex, child: child);
         },
@@ -68,6 +71,11 @@ GoRouter goRouter(Ref ref) {
             path: '/tickets',
             name: 'tickets',
             builder: (context, state) => const TicketsScreen(),
+          ),
+          GoRoute(
+            path: '/checklist',
+            name: 'checklist',
+            builder: (context, state) => const ChecklistScreen(),
           ),
           GoRoute(
             path: '/settings',
