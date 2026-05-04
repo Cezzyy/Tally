@@ -21,23 +21,220 @@ class TicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = context.isMobile;
+
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: SizedBox(
-          height: 280,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildHeader(context),
-              Expanded(child: _buildContent(context)),
-              _buildFooter(context),
-            ],
-          ),
-        ),
+        child: isMobile
+            ? _buildMobileLayout(context)
+            : _buildGridLayout(context),
       ),
     );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: _getPriorityColor(ticket.priority),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '#${ticket.ticketNumber}',
+                          style: context.textTheme.labelSmall?.copyWith(
+                            color: context.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (ticket.isArchived) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  context.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'ARCHIVED',
+                              style: context.textTheme.labelSmall?.copyWith(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      ticket.title,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuButton(
+                padding: EdgeInsets.zero,
+                iconSize: 20,
+                itemBuilder: (context) => _buildMenuItems(context),
+              ),
+            ],
+          ),
+          if (ticket.description.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              ticket.description,
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colorScheme.onSurface.withValues(alpha: 0.7),
+                height: 1.4,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildStatusChip(context),
+              _buildPriorityBadge(context),
+              if (ticket.dueDate != null) _buildDueDateChip(context),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridLayout(BuildContext context) {
+    return SizedBox(
+      height: 280,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildHeader(context),
+          Expanded(child: _buildContent(context)),
+          _buildFooter(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDueDateChip(BuildContext context) {
+    final dueDate = ticket.dueDate!;
+    final now = DateTime.now();
+    final isOverdue =
+        dueDate.isBefore(now) && ticket.status != TicketStatus.done;
+    final formattedDate = DateFormat('MMM d').format(dueDate);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isOverdue
+            ? Colors.red.withValues(alpha: 0.1)
+            : context.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(4),
+        border: isOverdue
+            ? Border.all(color: Colors.red.withValues(alpha: 0.3))
+            : null,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.calendar_today_outlined,
+            size: 12,
+            color: isOverdue
+                ? Colors.red
+                : context.colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            formattedDate,
+            style: context.textTheme.labelSmall?.copyWith(
+              color: isOverdue
+                  ? Colors.red
+                  : context.colorScheme.onSurface.withValues(alpha: 0.6),
+              fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<PopupMenuEntry> _buildMenuItems(BuildContext context) {
+    return [
+      PopupMenuItem(
+        onTap: onEdit,
+        child: const Row(
+          children: [
+            Icon(Icons.edit_outlined, size: 18),
+            SizedBox(width: 12),
+            Text('Edit'),
+          ],
+        ),
+      ),
+      PopupMenuItem(
+        onTap: onArchive,
+        child: Row(
+          children: [
+            Icon(
+              ticket.isArchived
+                  ? Icons.unarchive_outlined
+                  : Icons.archive_outlined,
+              size: 18,
+            ),
+            const SizedBox(width: 12),
+            Text(ticket.isArchived ? 'Unarchive' : 'Archive'),
+          ],
+        ),
+      ),
+      PopupMenuItem(
+        onTap: onDelete,
+        child: Row(
+          children: [
+            Icon(
+              Icons.delete_outline,
+              size: 18,
+              color: context.colorScheme.error,
+            ),
+            const SizedBox(width: 12),
+            Text('Delete', style: TextStyle(color: context.colorScheme.error)),
+          ],
+        ),
+      ),
+    ];
   }
 
   Widget _buildHeader(BuildContext context) {
