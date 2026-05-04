@@ -6,7 +6,7 @@ import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/home_shell.dart';
-import '../../features/tickets/presentation/screens/tickets_screen.dart';
+import '../../features/tickets/presentation/screens/tickets_list_screen.dart';
 import '../../features/checklist/presentation/screens/checklist_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../logging/app_logger.dart';
@@ -70,7 +70,7 @@ GoRouter goRouter(Ref ref) {
           GoRoute(
             path: '/tickets',
             name: 'tickets',
-            builder: (context, state) => const TicketsScreen(),
+            builder: (context, state) => const TicketsListScreen(),
           ),
           GoRoute(
             path: '/checklist',
