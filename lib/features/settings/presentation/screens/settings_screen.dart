@@ -56,6 +56,21 @@ class SettingsScreen extends ConsumerWidget {
 
         const SizedBox(height: 24),
 
+        // About Section
+        _SettingsSection(
+          title: 'About',
+          children: [
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: const Text('About Tally'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/about'),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
         // Account Section
         _SettingsSection(
           title: 'Account',

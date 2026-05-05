@@ -11,6 +11,7 @@ import '../../features/tickets/presentation/screens/ticket_details_screen.dart';
 import '../../features/checklist/presentation/screens/checklist_screen.dart';
 import '../../features/checklist/presentation/screens/checklist_details_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/settings/presentation/screens/about_screen.dart';
 import '../logging/app_logger.dart';
 
 part 'app_router.g.dart';
@@ -101,6 +102,11 @@ GoRouter goRouter(Ref ref) {
           final id = state.pathParameters['id']!;
           return ChecklistDetailsScreen(checklistId: id);
         },
+      ),
+      GoRoute(
+        path: '/about',
+        name: 'about',
+        builder: (context, state) => const AboutScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
