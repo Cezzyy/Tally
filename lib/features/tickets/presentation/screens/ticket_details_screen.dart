@@ -98,7 +98,7 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
               ],
             ),
             loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
           if (!context.isMobile) const SizedBox(width: 8),
         ],
@@ -143,6 +143,12 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: ticketDetailsAsync.when(
+        data: (ticketWithChecklist) =>
+            _buildFloatingActionButton(context, ticketWithChecklist.ticket),
+        loading: () => null,
+        error: (_, _) => null,
       ),
     );
   }
@@ -281,30 +287,40 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
         break;
     }
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.isMobile ? 10 : 12,
-        vertical: context.isMobile ? 6 : 8,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: context.isMobile ? 14 : 16, color: color),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style:
-                (context.isMobile
-                        ? context.textTheme.labelMedium
-                        : context.textTheme.labelLarge)
-                    ?.copyWith(color: color, fontWeight: FontWeight.w600),
-          ),
-        ],
+    return InkWell(
+      onTap: () => _showStatusPicker(context, status),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.isMobile ? 10 : 12,
+          vertical: context.isMobile ? 6 : 8,
+        ),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: context.isMobile ? 14 : 16, color: color),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style:
+                  (context.isMobile
+                          ? context.textTheme.labelMedium
+                          : context.textTheme.labelLarge)
+                      ?.copyWith(color: color, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.arrow_drop_down,
+              size: context.isMobile ? 16 : 18,
+              color: color,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -576,13 +592,16 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                       hintText: 'Add a checklist item...',
                       border: InputBorder.none,
                       isDense: true,
-                      hintStyle: TextStyle(fontSize: context.isMobile ? 14 : 16),
+                      hintStyle: TextStyle(
+                        fontSize: context.isMobile ? 14 : 16,
+                      ),
                       errorText: null, // Error shown separately below
                     ),
                     style: TextStyle(fontSize: context.isMobile ? 14 : 16),
                     onChanged: (value) {
                       // Clear error when user starts typing
-                      if (_checklistItemError != null && value.trim().isNotEmpty) {
+                      if (_checklistItemError != null &&
+                          value.trim().isNotEmpty) {
                         setState(() {
                           _checklistItemError = null;
                         });
@@ -749,7 +768,7 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
 
   Future<void> _addChecklistItem() async {
     final task = _checklistItemController.text.trim();
-    
+
     // Validate input
     if (task.isEmpty) {
       setState(() {
@@ -926,6 +945,186 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
       // Delete via repository and navigate back
       context.go('/tickets');
       context.showSnackBar('Ticket deleted');
+    }
+  }
+
+  Future<void> _showStatusPicker(
+    BuildContext context,
+    TicketStatus currentStatus,
+  ) async {
+    final isMobile = context.isMobile;
+
+    if (isMobile) {
+      // Show bottom sheet on mobile
+      final selected = await showModalBottomSheet<TicketStatus>(
+        context: context,
+        useRootNavigator: true,
+        showDragHandle: true,
+        builder: (context) => SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                child: Text(
+                  'Change Status',
+                  style: context.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              ...TicketStatus.values.map((status) {
+                final isSelected = status == currentStatus;
+                return ListTile(
+                  leading: _getStatusIcon(status),
+                  title: Text(_getStatusLabel(status)),
+                  trailing: isSelected
+                      ? Icon(
+                          Icons.check_circle,
+                          color: context.colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () => Navigator.of(context).pop(status),
+                );
+              }),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      );
+
+      if (selected != null && selected != currentStatus) {
+        await _updateStatus(selected);
+      }
+    } else {
+      // Show menu on desktop/tablet
+      final selected = await showMenu<TicketStatus>(
+        context: context,
+        position: _getMenuPosition(context),
+        items: TicketStatus.values.map((status) {
+          final isSelected = status == currentStatus;
+          return PopupMenuItem<TicketStatus>(
+            value: status,
+            child: Row(
+              children: [
+                _getStatusIcon(status),
+                const SizedBox(width: 12),
+                Text(_getStatusLabel(status)),
+                if (isSelected) ...[
+                  const Spacer(),
+                  Icon(
+                    Icons.check,
+                    size: 20,
+                    color: context.colorScheme.primary,
+                  ),
+                ],
+              ],
+            ),
+          );
+        }).toList(),
+      );
+
+      if (selected != null && selected != currentStatus) {
+        await _updateStatus(selected);
+      }
+    }
+  }
+
+  RelativeRect _getMenuPosition(BuildContext context) {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox button = context.findRenderObject() as RenderBox;
+    final Offset position = button.localToGlobal(
+      Offset.zero,
+      ancestor: overlay,
+    );
+
+    return RelativeRect.fromLTRB(
+      position.dx,
+      position.dy + button.size.height,
+      position.dx + button.size.width,
+      position.dy,
+    );
+  }
+
+  Icon _getStatusIcon(TicketStatus status) {
+    Color color;
+    IconData icon;
+
+    switch (status) {
+      case TicketStatus.backlog:
+        color = Colors.grey;
+        icon = Icons.inbox;
+        break;
+      case TicketStatus.inProgress:
+        color = Colors.blue;
+        icon = Icons.pending_actions;
+        break;
+      case TicketStatus.done:
+        color = Colors.green;
+        icon = Icons.check_circle;
+        break;
+    }
+
+    return Icon(icon, color: color);
+  }
+
+  String _getStatusLabel(TicketStatus status) {
+    switch (status) {
+      case TicketStatus.backlog:
+        return 'Backlog';
+      case TicketStatus.inProgress:
+        return 'In Progress';
+      case TicketStatus.done:
+        return 'Done';
+    }
+  }
+
+  Future<void> _updateStatus(TicketStatus newStatus) async {
+    try {
+      await ref
+          .read(ticketDetailsProvider(widget.ticketId).notifier)
+          .updateTicket(UpdateTicketDto(status: newStatus));
+      if (mounted) {
+        context.showSnackBar('Status updated to ${_getStatusLabel(newStatus)}');
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showSnackBar('Failed to update status', isError: true);
+      }
+    }
+  }
+
+  Widget? _buildFloatingActionButton(BuildContext context, Ticket ticket) {
+    // Don't show FAB if ticket is archived
+    if (ticket.isArchived) return null;
+
+    final isDone = ticket.status == TicketStatus.done;
+    final isInProgress = ticket.status == TicketStatus.inProgress;
+
+    if (isDone) {
+      // If done, show button to move back to in progress
+      return FloatingActionButton.extended(
+        onPressed: () => _updateStatus(TicketStatus.inProgress),
+        icon: const Icon(Icons.replay),
+        label: const Text('Reopen'),
+        backgroundColor: Colors.orange,
+      );
+    } else if (isInProgress) {
+      // If in progress, show mark as done
+      return FloatingActionButton.extended(
+        onPressed: () => _updateStatus(TicketStatus.done),
+        icon: const Icon(Icons.check_circle),
+        label: const Text('Mark as Done'),
+        backgroundColor: Colors.green,
+      );
+    } else {
+      // If backlog, show start working
+      return FloatingActionButton.extended(
+        onPressed: () => _updateStatus(TicketStatus.inProgress),
+        icon: const Icon(Icons.play_arrow),
+        label: const Text('Start Working'),
+      );
     }
   }
 }
