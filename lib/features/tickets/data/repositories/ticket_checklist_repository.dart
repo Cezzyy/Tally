@@ -35,10 +35,7 @@ class TicketChecklistRepository {
 
     final response = await SupabaseService.client
         .from('ticket_checklist_items')
-        .insert({
-          ...dto.toJson(),
-          'user_id': userId,
-        })
+        .insert({...dto.toJson(), 'user_id': userId})
         .select()
         .single();
 
@@ -69,7 +66,8 @@ class TicketChecklistRepository {
   Future<void> toggleChecklistItem(String id, bool isCompleted) async {
     await SupabaseService.client
         .from('ticket_checklist_items')
-        .update({'is_completed': isCompleted}).eq('id', id);
+        .update({'is_completed': isCompleted})
+        .eq('id', id);
   }
 
   Future<void> reorderChecklistItems(

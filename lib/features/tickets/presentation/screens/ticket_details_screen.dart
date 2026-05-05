@@ -31,7 +31,9 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ticketDetailsAsync = ref.watch(ticketDetailsProvider(widget.ticketId));
+    final ticketDetailsAsync = ref.watch(
+      ticketDetailsProvider(widget.ticketId),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -68,13 +70,17 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                   value: 'archive',
                   child: Row(
                     children: [
-                      Icon(ticketWithChecklist.ticket.isArchived
-                          ? Icons.unarchive
-                          : Icons.archive),
+                      Icon(
+                        ticketWithChecklist.ticket.isArchived
+                            ? Icons.unarchive
+                            : Icons.archive,
+                      ),
                       const SizedBox(width: 12),
-                      Text(ticketWithChecklist.ticket.isArchived
-                          ? 'Unarchive'
-                          : 'Archive'),
+                      Text(
+                        ticketWithChecklist.ticket.isArchived
+                            ? 'Unarchive'
+                            : 'Archive',
+                      ),
                     ],
                   ),
                 ),
@@ -194,12 +200,12 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                   fontWeight: FontWeight.bold,
                 )
               : (context.isTablet
-                  ? context.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    )
-                  : context.textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    )),
+                    ? context.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      )
+                    : context.textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      )),
         ),
         SizedBox(height: context.isMobile ? 12 : 16),
         // Badges below
@@ -229,13 +235,14 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                   const SizedBox(width: 4),
                   Text(
                     '${ticket.ticketNumber}',
-                    style: (context.isMobile
-                            ? context.textTheme.labelMedium
-                            : context.textTheme.labelLarge)
-                        ?.copyWith(
-                      color: context.colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style:
+                        (context.isMobile
+                                ? context.textTheme.labelMedium
+                                : context.textTheme.labelLarge)
+                            ?.copyWith(
+                              color: context.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
                   ),
                 ],
               ),
@@ -281,29 +288,20 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: context.isMobile ? 14 : 16,
-            color: color,
-          ),
+          Icon(icon, size: context.isMobile ? 14 : 16, color: color),
           const SizedBox(width: 6),
           Text(
             label,
-            style: (context.isMobile
-                    ? context.textTheme.labelMedium
-                    : context.textTheme.labelLarge)
-                ?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+            style:
+                (context.isMobile
+                        ? context.textTheme.labelMedium
+                        : context.textTheme.labelLarge)
+                    ?.copyWith(color: color, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -341,10 +339,7 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -352,21 +347,16 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
           Container(
             width: context.isMobile ? 8 : 10,
             height: context.isMobile ? 8 : 10,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
           Text(
             label,
-            style: (context.isMobile
-                    ? context.textTheme.labelMedium
-                    : context.textTheme.labelLarge)
-                ?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+            style:
+                (context.isMobile
+                        ? context.textTheme.labelMedium
+                        : context.textTheme.labelLarge)
+                    ?.copyWith(color: color, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -383,16 +373,18 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
               context,
               icon: Icons.calendar_today,
               label: 'Created',
-              value: DateFormat(context.isMobile ? 'MMM d, y' : 'MMM d, y • h:mm a')
-                  .format(ticket.createdAt),
+              value: DateFormat(
+                context.isMobile ? 'MMM d, y' : 'MMM d, y • h:mm a',
+              ).format(ticket.createdAt),
             ),
             Divider(height: context.isMobile ? 20 : 24),
             _buildMetadataRow(
               context,
               icon: Icons.update,
               label: 'Updated',
-              value: DateFormat(context.isMobile ? 'MMM d, y' : 'MMM d, y • h:mm a')
-                  .format(ticket.updatedAt),
+              value: DateFormat(
+                context.isMobile ? 'MMM d, y' : 'MMM d, y • h:mm a',
+              ).format(ticket.updatedAt),
             ),
             if (ticket.dueDate != null) ...[
               Divider(height: context.isMobile ? 20 : 24),
@@ -440,13 +432,14 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
               const SizedBox(height: 4),
               Text(
                 value,
-                style: (context.isMobile
-                        ? context.textTheme.bodyMedium
-                        : context.textTheme.bodyLarge)
-                    ?.copyWith(
-                  color: valueColor,
-                  fontWeight: FontWeight.w500,
-                ),
+                style:
+                    (context.isMobile
+                            ? context.textTheme.bodyMedium
+                            : context.textTheme.bodyLarge)
+                        ?.copyWith(
+                          color: valueColor,
+                          fontWeight: FontWeight.w500,
+                        ),
               ),
             ],
           ),
@@ -461,31 +454,37 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
       children: [
         Text(
           'Description',
-          style: (context.isMobile
-                  ? context.textTheme.titleMedium
-                  : context.textTheme.titleLarge)
-              ?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: context.colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
+          style:
+              (context.isMobile
+                      ? context.textTheme.titleMedium
+                      : context.textTheme.titleLarge)
+                  ?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: context.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
         ),
         SizedBox(height: context.isMobile ? 8 : 12),
         Container(
           width: double.infinity,
           padding: EdgeInsets.all(context.isMobile ? 16.0 : 20.0),
           decoration: BoxDecoration(
-            color: context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            color: context.colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.3,
+            ),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             ticket.description,
-            style: (context.isMobile
-                    ? context.textTheme.bodyMedium
-                    : context.textTheme.bodyLarge)
-                ?.copyWith(
-              height: 1.6,
-              color: context.colorScheme.onSurface.withValues(alpha: 0.87),
-            ),
+            style:
+                (context.isMobile
+                        ? context.textTheme.bodyMedium
+                        : context.textTheme.bodyLarge)
+                    ?.copyWith(
+                      height: 1.6,
+                      color: context.colorScheme.onSurface.withValues(
+                        alpha: 0.87,
+                      ),
+                    ),
           ),
         ),
       ],
@@ -508,20 +507,20 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                 children: [
                   Text(
                     'Checklist',
-                    style: (context.isMobile
-                            ? context.textTheme.titleMedium
-                            : context.textTheme.titleLarge)
-                        ?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style:
+                        (context.isMobile
+                                ? context.textTheme.titleMedium
+                                : context.textTheme.titleLarge)
+                            ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   if (ticketWithChecklist.hasChecklist) ...[
                     const SizedBox(height: 4),
                     Text(
                       '${ticketWithChecklist.completedItems}/${ticketWithChecklist.totalItems} completed',
                       style: context.textTheme.bodySmall?.copyWith(
-                        color: context.colorScheme.onSurface
-                            .withValues(alpha: 0.6),
+                        color: context.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                     ),
                   ],
@@ -531,13 +530,14 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
             if (ticketWithChecklist.hasChecklist)
               Text(
                 '${ticketWithChecklist.completionPercentage.toStringAsFixed(0)}%',
-                style: (context.isMobile
-                        ? context.textTheme.titleMedium
-                        : context.textTheme.titleLarge)
-                    ?.copyWith(
-                  color: context.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+                style:
+                    (context.isMobile
+                            ? context.textTheme.titleMedium
+                            : context.textTheme.titleLarge)
+                        ?.copyWith(
+                          color: context.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
               ),
           ],
         ),
@@ -545,8 +545,9 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
           SizedBox(height: context.isMobile ? 8 : 12),
           LinearProgressIndicator(
             value: ticketWithChecklist.completionPercentage / 100,
-            backgroundColor:
-                context.colorScheme.primaryContainer.withValues(alpha: 0.3),
+            backgroundColor: context.colorScheme.primaryContainer.withValues(
+              alpha: 0.3,
+            ),
             minHeight: context.isMobile ? 6 : 8,
           ),
         ],
@@ -571,9 +572,7 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                   hintText: 'Add a checklist item...',
                   border: InputBorder.none,
                   isDense: true,
-                  hintStyle: TextStyle(
-                    fontSize: context.isMobile ? 14 : 16,
-                  ),
+                  hintStyle: TextStyle(fontSize: context.isMobile ? 14 : 16),
                 ),
                 style: TextStyle(fontSize: context.isMobile ? 14 : 16),
                 onSubmitted: (value) => _addChecklistItem(),
@@ -610,12 +609,15 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                 SizedBox(height: context.isMobile ? 8 : 12),
                 Text(
                   'No checklist items yet',
-                  style: (context.isMobile
-                          ? context.textTheme.bodyMedium
-                          : context.textTheme.bodyLarge)
-                      ?.copyWith(
-                    color: context.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                  style:
+                      (context.isMobile
+                              ? context.textTheme.bodyMedium
+                              : context.textTheme.bodyLarge)
+                          ?.copyWith(
+                            color: context.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
                 ),
               ],
             ),
@@ -659,16 +661,18 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
       ),
       title: Text(
         item.task,
-        style: (context.isMobile
-                ? context.textTheme.bodyMedium
-                : context.textTheme.bodyLarge)
-            ?.copyWith(
-          decoration:
-              item.isCompleted ? TextDecoration.lineThrough : null,
-          color: item.isCompleted
-              ? context.colorScheme.onSurface.withValues(alpha: 0.6)
-              : null,
-        ),
+        style:
+            (context.isMobile
+                    ? context.textTheme.bodyMedium
+                    : context.textTheme.bodyLarge)
+                ?.copyWith(
+                  decoration: item.isCompleted
+                      ? TextDecoration.lineThrough
+                      : null,
+                  color: item.isCompleted
+                      ? context.colorScheme.onSurface.withValues(alpha: 0.6)
+                      : null,
+                ),
       ),
       trailing: PopupMenuButton<String>(
         onSelected: (value) {
@@ -760,8 +764,10 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
             );
       } catch (e) {
         if (mounted) {
-          context.showSnackBar('Failed to update checklist item',
-              isError: true);
+          context.showSnackBar(
+            'Failed to update checklist item',
+            isError: true,
+          );
         }
       }
     }
@@ -796,8 +802,10 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
             .deleteChecklistItem(item.id);
       } catch (e) {
         if (mounted) {
-          context.showSnackBar('Failed to delete checklist item',
-              isError: true);
+          context.showSnackBar(
+            'Failed to delete checklist item',
+            isError: true,
+          );
         }
       }
     }
@@ -829,9 +837,7 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
     try {
       await ref
           .read(ticketDetailsProvider(widget.ticketId).notifier)
-          .updateTicket(
-            UpdateTicketDto(isArchived: !ticket.isArchived),
-          );
+          .updateTicket(UpdateTicketDto(isArchived: !ticket.isArchived));
       if (mounted) {
         context.showSnackBar(
           ticket.isArchived ? 'Ticket unarchived' : 'Ticket archived',

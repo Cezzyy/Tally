@@ -16,10 +16,7 @@ class TicketDetails extends _$TicketDetails {
     final ticket = await ticketRepo.getTicketById(ticketId);
     final checklistItems = await checklistRepo.getChecklistItems(ticketId);
 
-    return TicketWithChecklist(
-      ticket: ticket,
-      checklistItems: checklistItems,
-    );
+    return TicketWithChecklist(ticket: ticket, checklistItems: checklistItems);
   }
 
   Future<void> refresh() async {
@@ -36,11 +33,11 @@ class TicketDetails extends _$TicketDetails {
   Future<void> addChecklistItem(String task) async {
     final checklistRepo = ref.read(ticketChecklistRepositoryProvider);
     final currentState = state.value;
-    
+
     if (currentState == null) return;
 
     final displayOrder = currentState.checklistItems.length;
-    
+
     await checklistRepo.createChecklistItem(
       CreateTicketChecklistItemDto(
         ticketId: ticketId,
@@ -48,7 +45,7 @@ class TicketDetails extends _$TicketDetails {
         displayOrder: displayOrder,
       ),
     );
-    
+
     await refresh();
   }
 

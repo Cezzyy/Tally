@@ -121,7 +121,7 @@ class TicketWithChecklist {
   });
 
   int get totalItems => checklistItems.length;
-  
+
   int get completedItems =>
       checklistItems.where((item) => item.isCompleted).length;
 
