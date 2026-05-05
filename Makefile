@@ -29,7 +29,7 @@ test:
 check: analyze format test
 
 run:
-	flutter run -d linux
+	flutter run
 
 db-push:
 	supabase db push
