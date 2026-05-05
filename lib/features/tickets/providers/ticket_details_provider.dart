@@ -214,7 +214,9 @@ class TicketDetails extends _$TicketDetails {
     if (currentState == null) return;
 
     // Optimistic update
-    final itemsMap = {for (var item in currentState.checklistItems) item.id: item};
+    final itemsMap = {
+      for (var item in currentState.checklistItems) item.id: item,
+    };
     final reorderedItems = itemIds
         .map((id) => itemsMap[id])
         .whereType<TicketChecklistItem>()
