@@ -155,7 +155,23 @@ dart run build_runner build --delete-conflicting-outputs
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+### Quick Contribution Guide
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests and formatting (`make test && make format`)
+5. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+6. Push to your branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Security
+
+Found a security vulnerability? Please review our [Security Policy](SECURITY.md) for responsible disclosure guidelines.
 
 ## License
 
