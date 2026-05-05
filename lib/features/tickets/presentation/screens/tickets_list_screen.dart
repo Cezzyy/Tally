@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/extensions/context_extensions.dart';
 import '../../../../shared/widgets/empty_state.dart';
@@ -246,7 +247,7 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
   }
 
   void _showTicketDetails(BuildContext context, Ticket ticket) {
-    context.showSnackBar('Ticket details coming soon');
+    context.push('/tickets/${ticket.id}');
   }
 
   Future<void> _confirmDelete(BuildContext context, Ticket ticket) async {

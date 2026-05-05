@@ -7,6 +7,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/home_shell.dart';
 import '../../features/tickets/presentation/screens/tickets_list_screen.dart';
+import '../../features/tickets/presentation/screens/ticket_details_screen.dart';
 import '../../features/checklist/presentation/screens/checklist_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../logging/app_logger.dart';
@@ -83,6 +84,14 @@ GoRouter goRouter(Ref ref) {
             builder: (context, state) => const SettingsScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/tickets/:id',
+        name: 'ticket-details',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return TicketDetailsScreen(ticketId: id);
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
