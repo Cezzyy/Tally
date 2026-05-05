@@ -181,10 +181,8 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                 _buildHeader(context, ticket),
                 SizedBox(height: spacing * 1.5),
                 _buildMetadata(context, ticket),
-                if (ticket.description.isNotEmpty) ...[
-                  SizedBox(height: spacing * 1.5),
-                  _buildDescription(context, ticket),
-                ],
+                SizedBox(height: spacing * 1.5),
+                _buildDescription(context, ticket),
                 SizedBox(height: spacing * 2),
                 _buildChecklistSection(context, ticketWithChecklist),
               ],
@@ -469,16 +467,30 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Description',
-          style:
-              (context.isMobile
-                      ? context.textTheme.titleMedium
-                      : context.textTheme.titleLarge)
-                  ?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: context.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Description',
+              style:
+                  (context.isMobile
+                          ? context.textTheme.titleMedium
+                          : context.textTheme.titleLarge)
+                      ?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
+            ),
+            IconButton(
+              onPressed: () => _editDescription(ticket),
+              icon: const Icon(Icons.edit_outlined),
+              iconSize: context.isMobile ? 20 : 22,
+              tooltip: 'Edit description',
+              color: context.colorScheme.primary,
+            ),
+          ],
         ),
         SizedBox(height: context.isMobile ? 8 : 12),
         Container(
@@ -491,16 +503,23 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            ticket.description,
+            ticket.description.isEmpty
+                ? 'No description provided. Click edit to add one.'
+                : ticket.description,
             style:
                 (context.isMobile
                         ? context.textTheme.bodyMedium
                         : context.textTheme.bodyLarge)
                     ?.copyWith(
                       height: 1.6,
-                      color: context.colorScheme.onSurface.withValues(
-                        alpha: 0.87,
-                      ),
+                      color: ticket.description.isEmpty
+                          ? context.colorScheme.onSurface.withValues(alpha: 0.5)
+                          : context.colorScheme.onSurface.withValues(
+                              alpha: 0.87,
+                            ),
+                      fontStyle: ticket.description.isEmpty
+                          ? FontStyle.italic
+                          : null,
                     ),
           ),
         ),
@@ -572,6 +591,8 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
         _buildAddChecklistItem(context),
         SizedBox(height: context.isMobile ? 12 : 16),
         _buildChecklistItems(context, ticketWithChecklist.checklistItems),
+        // Add bottom padding to prevent FAB overlap
+        SizedBox(height: context.isMobile ? 80 : 100),
       ],
     );
   }
@@ -1091,6 +1112,126 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
     } catch (e) {
       if (mounted) {
         context.showSnackBar('Failed to update status', isError: true);
+      }
+    }
+  }
+
+  Future<void> _editDescription(Ticket ticket) async {
+    final controller = TextEditingController(text: ticket.description);
+    final isMobile = context.isMobile;
+
+    if (isMobile) {
+      // Show bottom sheet on mobile
+      final result = await showModalBottomSheet<String>(
+        context: context,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        showDragHandle: true,
+        useSafeArea: true,
+        builder: (context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Edit Description',
+                  style: context.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(
+                    labelText: 'Description',
+                    hintText: 'Enter ticket description',
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                  ),
+                  maxLines: 8,
+                  autofocus: true,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton(
+                      onPressed: () =>
+                          Navigator.of(context).pop(controller.text.trim()),
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      if (result != null && result != ticket.description) {
+        await _updateDescription(result);
+      }
+    } else {
+      // Show dialog on desktop/tablet
+      final result = await showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Edit Description'),
+          content: SizedBox(
+            width: 500,
+            child: TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                hintText: 'Enter ticket description',
+                border: OutlineInputBorder(),
+                alignLabelWithHint: true,
+              ),
+              maxLines: 8,
+              autofocus: true,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  Navigator.of(context).pop(controller.text.trim()),
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      );
+
+      if (result != null && result != ticket.description) {
+        await _updateDescription(result);
+      }
+    }
+  }
+
+  Future<void> _updateDescription(String newDescription) async {
+    try {
+      await ref
+          .read(ticketDetailsProvider(widget.ticketId).notifier)
+          .updateTicket(UpdateTicketDto(description: newDescription));
+      if (mounted) {
+        context.showSnackBar('Description updated');
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showSnackBar('Failed to update description', isError: true);
       }
     }
   }
