@@ -67,10 +67,7 @@ void main() {
       test('throws exception when both variables are not set', () {
         dotenv.testLoad(fileInput: '');
 
-        expect(
-          () => EnvConfig.validate(),
-          throwsA(isA<Exception>()),
-        );
+        expect(() => EnvConfig.validate(), throwsA(isA<Exception>()));
       });
 
       test('does not throw when both variables are set', () {
@@ -92,10 +89,7 @@ SUPABASE_ANON_KEY=test-key
 ''',
         );
 
-        expect(
-          () => EnvConfig.validate(),
-          throwsA(isA<Exception>()),
-        );
+        expect(() => EnvConfig.validate(), throwsA(isA<Exception>()));
       });
 
       test('throws exception when SUPABASE_ANON_KEY is empty string', () {
@@ -106,10 +100,7 @@ SUPABASE_ANON_KEY=
 ''',
         );
 
-        expect(
-          () => EnvConfig.validate(),
-          throwsA(isA<Exception>()),
-        );
+        expect(() => EnvConfig.validate(), throwsA(isA<Exception>()));
       });
 
       test('handles whitespace in values', () {

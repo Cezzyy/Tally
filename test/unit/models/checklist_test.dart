@@ -225,9 +225,7 @@ void main() {
     });
 
     test('toJson uses default values when not provided', () {
-      final dto = CreateChecklistDto(
-        title: 'New Checklist',
-      );
+      final dto = CreateChecklistDto(title: 'New Checklist');
 
       final json = dto.toJson();
 

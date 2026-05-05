@@ -189,8 +189,7 @@ void main() {
       expect(isDesktop, true);
     });
 
-    testWidgets('showSnackBar displays snackbar with message',
-        (tester) async {
+    testWidgets('showSnackBar displays snackbar with message', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -214,8 +213,9 @@ void main() {
       expect(find.text('Test message'), findsOneWidget);
     });
 
-    testWidgets('showSnackBar displays error snackbar when isError is true',
-        (tester) async {
+    testWidgets('showSnackBar displays error snackbar when isError is true', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -250,9 +250,7 @@ void main() {
               builder: (context) {
                 return ElevatedButton(
                   onPressed: () {
-                    context.showBottomSheet(
-                      const Text('Bottom Sheet Content'),
-                    );
+                    context.showBottomSheet(const Text('Bottom Sheet Content'));
                   },
                   child: const Text('Show Bottom Sheet'),
                 );

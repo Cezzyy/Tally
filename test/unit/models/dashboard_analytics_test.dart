@@ -172,7 +172,8 @@ void main() {
       );
 
       // Note: archived tickets are separate from status counts
-      final activeTickets = analytics.backlogTickets +
+      final activeTickets =
+          analytics.backlogTickets +
           analytics.inProgressTickets +
           analytics.doneTickets;
 
@@ -198,7 +199,8 @@ void main() {
         completionRate: 0.0,
       );
 
-      final totalByPriority = analytics.urgentTickets +
+      final totalByPriority =
+          analytics.urgentTickets +
           analytics.highPriorityTickets +
           analytics.mediumPriorityTickets +
           analytics.lowPriorityTickets;

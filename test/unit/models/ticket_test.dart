@@ -317,11 +317,7 @@ void main() {
     });
 
     test('fromJson creates valid DTO', () {
-      final json = {
-        'title': 'Updated',
-        'status': 'done',
-        'priority': 'high',
-      };
+      final json = {'title': 'Updated', 'status': 'done', 'priority': 'high'};
 
       final dto = UpdateTicketDto.fromJson(json);
 
