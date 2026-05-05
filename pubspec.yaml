@@ -25,6 +25,8 @@ dependencies:
   talker_flutter: ^5.1.17
   talker_riverpod_logger: ^5.1.17
   shared_preferences: ^2.3.5
+  mockito: ^5.6.4
+  golden_toolkit: ^0.15.0
 
 dev_dependencies:
   flutter_test:
