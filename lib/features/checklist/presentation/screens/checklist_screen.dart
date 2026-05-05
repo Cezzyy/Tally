@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/extensions/context_extensions.dart';
 import '../../../../shared/widgets/empty_state.dart';
@@ -269,7 +270,7 @@ class _ChecklistScreenState extends ConsumerState<ChecklistScreen> {
     BuildContext context,
     ChecklistWithStats checklist,
   ) {
-    context.showSnackBar('Checklist details coming soon');
+    context.push('/checklist/${checklist.id}');
   }
 
   Future<void> _confirmDelete(

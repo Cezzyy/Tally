@@ -9,6 +9,7 @@ import '../../features/home/presentation/screens/home_shell.dart';
 import '../../features/tickets/presentation/screens/tickets_list_screen.dart';
 import '../../features/tickets/presentation/screens/ticket_details_screen.dart';
 import '../../features/checklist/presentation/screens/checklist_screen.dart';
+import '../../features/checklist/presentation/screens/checklist_details_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../logging/app_logger.dart';
 
@@ -91,6 +92,14 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return TicketDetailsScreen(ticketId: id);
+        },
+      ),
+      GoRoute(
+        path: '/checklist/:id',
+        name: 'checklist-details',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ChecklistDetailsScreen(checklistId: id);
         },
       ),
     ],
