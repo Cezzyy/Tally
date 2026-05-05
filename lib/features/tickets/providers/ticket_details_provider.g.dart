@@ -50,7 +50,7 @@ final class TicketDetailsProvider
   }
 }
 
-String _$ticketDetailsHash() => r'8b5d44403241af432a0d7f33665ba5f908320f6e';
+String _$ticketDetailsHash() => r'cd85aae04a5d22d1a0f5d0b7230aaa7764f3fdb2';
 
 final class TicketDetailsFamily extends $Family
     with
