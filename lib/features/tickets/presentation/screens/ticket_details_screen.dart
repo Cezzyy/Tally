@@ -466,17 +466,25 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
                   : context.textTheme.titleLarge)
               ?.copyWith(
             fontWeight: FontWeight.bold,
+            color: context.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         SizedBox(height: context.isMobile ? 8 : 12),
-        Card(
-          child: Padding(
-            padding: EdgeInsets.all(context.isMobile ? 12.0 : 16.0),
-            child: Text(
-              ticket.description,
-              style: context.isMobile
-                  ? context.textTheme.bodyMedium
-                  : context.textTheme.bodyLarge,
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(context.isMobile ? 16.0 : 20.0),
+          decoration: BoxDecoration(
+            color: context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            ticket.description,
+            style: (context.isMobile
+                    ? context.textTheme.bodyMedium
+                    : context.textTheme.bodyLarge)
+                ?.copyWith(
+              height: 1.6,
+              color: context.colorScheme.onSurface.withValues(alpha: 0.87),
             ),
           ),
         ),
