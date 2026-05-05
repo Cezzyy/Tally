@@ -22,6 +22,7 @@ class TicketDetailsScreen extends ConsumerStatefulWidget {
 class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
   final TextEditingController _checklistItemController =
       TextEditingController();
+  String? _checklistItemError;
 
   @override
   void dispose() {
@@ -563,27 +564,62 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(context.isMobile ? 8.0 : 12.0),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: TextField(
-                controller: _checklistItemController,
-                decoration: InputDecoration(
-                  hintText: 'Add a checklist item...',
-                  border: InputBorder.none,
-                  isDense: true,
-                  hintStyle: TextStyle(fontSize: context.isMobile ? 14 : 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _checklistItemController,
+                    decoration: InputDecoration(
+                      hintText: 'Add a checklist item...',
+                      border: InputBorder.none,
+                      isDense: true,
+                      hintStyle: TextStyle(fontSize: context.isMobile ? 14 : 16),
+                      errorText: null, // Error shown separately below
+                    ),
+                    style: TextStyle(fontSize: context.isMobile ? 14 : 16),
+                    onChanged: (value) {
+                      // Clear error when user starts typing
+                      if (_checklistItemError != null && value.trim().isNotEmpty) {
+                        setState(() {
+                          _checklistItemError = null;
+                        });
+                      }
+                    },
+                    onSubmitted: (value) => _addChecklistItem(),
+                  ),
                 ),
-                style: TextStyle(fontSize: context.isMobile ? 14 : 16),
-                onSubmitted: (value) => _addChecklistItem(),
+                IconButton(
+                  onPressed: _addChecklistItem,
+                  icon: const Icon(Icons.add),
+                  tooltip: 'Add item',
+                  iconSize: context.isMobile ? 20 : 24,
+                ),
+              ],
+            ),
+            if (_checklistItemError != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 16,
+                    color: context.colorScheme.error,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _checklistItemError!,
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            IconButton(
-              onPressed: _addChecklistItem,
-              icon: const Icon(Icons.add),
-              tooltip: 'Add item',
-              iconSize: context.isMobile ? 20 : 24,
-            ),
+            ],
           ],
         ),
       ),
@@ -713,7 +749,19 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
 
   Future<void> _addChecklistItem() async {
     final task = _checklistItemController.text.trim();
-    if (task.isEmpty) return;
+    
+    // Validate input
+    if (task.isEmpty) {
+      setState(() {
+        _checklistItemError = 'Please enter a checklist item';
+      });
+      return;
+    }
+
+    // Clear any previous error
+    setState(() {
+      _checklistItemError = null;
+    });
 
     try {
       await ref
@@ -722,7 +770,9 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
       _checklistItemController.clear();
     } catch (e) {
       if (mounted) {
-        context.showSnackBar('Failed to add checklist item', isError: true);
+        setState(() {
+          _checklistItemError = 'Failed to add item. Please try again.';
+        });
       }
     }
   }
