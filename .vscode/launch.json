@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter: Run App",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "Flutter: Run Tests",
+      "type": "dart",
+      "request": "launch",
+      "program": "test/"
+    },
+    {
+      "name": "Flutter: Run Current Test File",
+      "type": "dart",
+      "request": "launch",
+      "program": "${file}",
+      "args": [
+        "--no-sound-null-safety"
+      ]
+    },
+    {
+      "name": "Flutter: Debug Current Test File",
+      "type": "dart",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
