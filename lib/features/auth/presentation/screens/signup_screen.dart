@@ -13,7 +13,8 @@ class SignupScreen extends ConsumerStatefulWidget {
   ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends ConsumerState<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -21,9 +22,127 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _autoValidate = false;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _logoScaleAnimation;
+  late Animation<double> _headerFadeAnimation;
+  late Animation<double> _emailFadeAnimation;
+  late Animation<double> _passwordFadeAnimation;
+  late Animation<double> _confirmPasswordFadeAnimation;
+  late Animation<double> _buttonFadeAnimation;
+  late Animation<Offset> _emailSlideAnimation;
+  late Animation<Offset> _passwordSlideAnimation;
+  late Animation<Offset> _confirmPasswordSlideAnimation;
+  late Animation<Offset> _buttonSlideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    );
+
+    // Overall fade and slide
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+      ),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
+          ),
+        );
+
+    // Logo scale animation
+    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.5, curve: Curves.elasticOut),
+      ),
+    );
+
+    // Staggered fade animations
+    _headerFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.2, 0.5, curve: Curves.easeOut),
+      ),
+    );
+
+    _emailFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.3, 0.6, curve: Curves.easeOut),
+      ),
+    );
+
+    _passwordFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.4, 0.7, curve: Curves.easeOut),
+      ),
+    );
+
+    _confirmPasswordFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.5, 0.8, curve: Curves.easeOut),
+      ),
+    );
+
+    _buttonFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.6, 0.9, curve: Curves.easeOut),
+      ),
+    );
+
+    // Staggered slide animations
+    _emailSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.3, 0.7, curve: Curves.easeOutCubic),
+          ),
+        );
+
+    _passwordSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.4, 0.8, curve: Curves.easeOutCubic),
+          ),
+        );
+
+    _confirmPasswordSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.5, 0.9, curve: Curves.easeOutCubic),
+          ),
+        );
+
+    _buttonSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.6, 1.0, curve: Curves.easeOutCubic),
+          ),
+        );
+
+    _animationController.forward();
+  }
 
   @override
   void dispose() {
+    _animationController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -82,166 +201,519 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: isLoading ? null : () => context.go('/login'),
         ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(context.isMobile ? 16.0 : 24.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: context.isMobile
-                  ? double.infinity
-                  : AppConstants.maxFormWidth,
-            ),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: _autoValidate
-                  ? AutovalidateMode.onUserInteraction
-                  : AutovalidateMode.disabled,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Icon(
-                    Icons.person_add_outlined,
-                    size: context.isMobile ? 64 : 80,
-                    color: context.colorScheme.primary,
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // Animated background (reuse from login)
+          _buildAnimatedBackground(context),
+
+          // Main content
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(context.isMobile ? 24.0 : 32.0),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: _buildSignupCard(context, isLoading),
                   ),
-                  SizedBox(height: context.isMobile ? 16 : 24),
-                  Text(
-                    'Create Account',
-                    style: context.isMobile
-                        ? context.textTheme.headlineSmall
-                        : context.textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sign up to get started',
-                    style: context.textTheme.bodyLarge?.copyWith(
-                      color: context.colorScheme.onSurface.withValues(
-                        alpha: 0.6,
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: context.isMobile ? 32 : 48),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'Enter your email',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: Validators.validateEmail,
-                    enabled: !isLoading,
-                    onChanged: (_) {
-                      if (_autoValidate) {
-                        _formKey.currentState!.validate();
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      hintText: 'At least 6 characters',
-                      prefixIcon: const Icon(Icons.lock_outlined),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: Validators.validatePassword,
-                    enabled: !isLoading,
-                    onChanged: (_) {
-                      if (_autoValidate) {
-                        _formKey.currentState!.validate();
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm Password',
-                      hintText: 'Re-enter your password',
-                      prefixIcon: const Icon(Icons.lock_outlined),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: _validateConfirmPassword,
-                    enabled: !isLoading,
-                    onChanged: (_) {
-                      if (_autoValidate) {
-                        _formKey.currentState!.validate();
-                      }
-                    },
-                    onFieldSubmitted: (_) => _handleSignup(),
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: isLoading ? null : _handleSignup,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: context.isMobile ? 12.0 : 16.0,
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Sign Up'),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: isLoading ? null : () => context.go('/login'),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: context.isMobile ? 8.0 : 12.0,
-                      ),
-                      child: const Text('Already have an account? Sign In'),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnimatedBackground(BuildContext context) {
+    return Positioned.fill(
+      child: CustomPaint(
+        painter: _BackgroundPainter(
+          color1: context.colorScheme.secondary.withValues(alpha: 0.05),
+          color2: context.colorScheme.tertiary.withValues(alpha: 0.05),
+          color3: context.colorScheme.primary.withValues(alpha: 0.03),
         ),
       ),
     );
   }
+
+  Widget _buildSignupCard(BuildContext context, bool isLoading) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: context.isMobile
+            ? double.infinity
+            : AppConstants.maxFormWidth,
+      ),
+      child: Form(
+        key: _formKey,
+        autovalidateMode: _autoValidate
+            ? AutovalidateMode.onUserInteraction
+            : AutovalidateMode.disabled,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHeader(context),
+            SizedBox(height: context.isMobile ? 32 : 40),
+            // Animated email field
+            FadeTransition(
+              opacity: _emailFadeAnimation,
+              child: SlideTransition(
+                position: _emailSlideAnimation,
+                child: _buildEmailField(context, isLoading),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Animated password field
+            FadeTransition(
+              opacity: _passwordFadeAnimation,
+              child: SlideTransition(
+                position: _passwordSlideAnimation,
+                child: _buildPasswordField(context, isLoading),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Animated confirm password field
+            FadeTransition(
+              opacity: _confirmPasswordFadeAnimation,
+              child: SlideTransition(
+                position: _confirmPasswordSlideAnimation,
+                child: _buildConfirmPasswordField(context, isLoading),
+              ),
+            ),
+            SizedBox(height: context.isMobile ? 32 : 40),
+            // Animated buttons
+            FadeTransition(
+              opacity: _buttonFadeAnimation,
+              child: SlideTransition(
+                position: _buttonSlideAnimation,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildSignUpButton(context, isLoading),
+                    const SizedBox(height: 20),
+                    _buildSignInLink(context, isLoading),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Column(
+      children: [
+        // Animated logo container with scale
+        ScaleTransition(
+          scale: _logoScaleAnimation,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Container(
+              padding: EdgeInsets.all(context.isMobile ? 16 : 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    context.colorScheme.secondaryContainer,
+                    context.colorScheme.tertiaryContainer,
+                  ],
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: context.colorScheme.secondary.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.remove_done,
+                size: context.isMobile ? 48 : 64,
+                color: context.colorScheme.secondary,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: context.isMobile ? 20 : 28),
+        FadeTransition(
+          opacity: _headerFadeAnimation,
+          child: Column(
+            children: [
+              Text(
+                'Create Account',
+                style:
+                    (context.isMobile
+                            ? context.textTheme.headlineSmall
+                            : context.textTheme.headlineLarge)
+                        ?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Join us and start organizing your tasks',
+                style: context.textTheme.bodyLarge?.copyWith(
+                  color: context.colorScheme.onSurface.withValues(alpha: 0.6),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmailField(BuildContext context, bool isLoading) {
+    return TextFormField(
+      controller: _emailController,
+      keyboardType: TextInputType.emailAddress,
+      textInputAction: TextInputAction.next,
+      style: TextStyle(fontSize: context.isMobile ? 16 : 18),
+      decoration: InputDecoration(
+        labelText: 'Email',
+        hintText: 'your.email@example.com',
+        prefixIcon: Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.colorScheme.secondaryContainer.withValues(
+              alpha: 0.5,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.email_outlined,
+            size: 20,
+            color: context.colorScheme.secondary,
+          ),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: context.colorScheme.outline.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: context.colorScheme.secondary,
+            width: 2,
+          ),
+        ),
+        filled: true,
+        fillColor: context.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.3,
+        ),
+      ),
+      validator: Validators.validateEmail,
+      enabled: !isLoading,
+      onChanged: (_) {
+        if (_autoValidate) {
+          _formKey.currentState!.validate();
+        }
+      },
+    );
+  }
+
+  Widget _buildPasswordField(BuildContext context, bool isLoading) {
+    return TextFormField(
+      controller: _passwordController,
+      obscureText: _obscurePassword,
+      textInputAction: TextInputAction.next,
+      style: TextStyle(fontSize: context.isMobile ? 16 : 18),
+      decoration: InputDecoration(
+        labelText: 'Password',
+        hintText: 'At least 6 characters',
+        prefixIcon: Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.colorScheme.secondaryContainer.withValues(
+              alpha: 0.5,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.lock_outlined,
+            size: 20,
+            color: context.colorScheme.secondary,
+          ),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: context.colorScheme.outline.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: context.colorScheme.secondary,
+            width: 2,
+          ),
+        ),
+        filled: true,
+        fillColor: context.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.3,
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscurePassword
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
+          ),
+          onPressed: () {
+            setState(() {
+              _obscurePassword = !_obscurePassword;
+            });
+          },
+        ),
+      ),
+      validator: Validators.validatePassword,
+      enabled: !isLoading,
+      onChanged: (_) {
+        if (_autoValidate) {
+          _formKey.currentState!.validate();
+        }
+      },
+    );
+  }
+
+  Widget _buildConfirmPasswordField(BuildContext context, bool isLoading) {
+    return TextFormField(
+      controller: _confirmPasswordController,
+      obscureText: _obscureConfirmPassword,
+      textInputAction: TextInputAction.done,
+      style: TextStyle(fontSize: context.isMobile ? 16 : 18),
+      decoration: InputDecoration(
+        labelText: 'Confirm Password',
+        hintText: 'Re-enter your password',
+        prefixIcon: Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.colorScheme.secondaryContainer.withValues(
+              alpha: 0.5,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.lock_outlined,
+            size: 20,
+            color: context.colorScheme.secondary,
+          ),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: context.colorScheme.outline.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: context.colorScheme.secondary,
+            width: 2,
+          ),
+        ),
+        filled: true,
+        fillColor: context.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.3,
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscureConfirmPassword
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
+          ),
+          onPressed: () {
+            setState(() {
+              _obscureConfirmPassword = !_obscureConfirmPassword;
+            });
+          },
+        ),
+      ),
+      validator: _validateConfirmPassword,
+      enabled: !isLoading,
+      onChanged: (_) {
+        if (_autoValidate) {
+          _formKey.currentState!.validate();
+        }
+      },
+      onFieldSubmitted: (_) => _handleSignup(),
+    );
+  }
+
+  Widget _buildSignUpButton(BuildContext context, bool isLoading) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [
+            context.colorScheme.secondary,
+            context.colorScheme.secondary.withValues(alpha: 0.8),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.colorScheme.secondary.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: FilledButton(
+        onPressed: isLoading ? null : _handleSignup,
+        style: FilledButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: context.isMobile ? 16.0 : 20.0,
+          ),
+          child: isLoading
+              ? SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      context.colorScheme.onSecondary,
+                    ),
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontSize: context.isMobile ? 16 : 18,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward, size: 20),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignInLink(BuildContext context, bool isLoading) {
+    return TextButton(
+      onPressed: isLoading ? null : () => context.go('/login'),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: context.isMobile ? 8.0 : 12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Already have an account?',
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'Sign In',
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Custom painter for animated background
+class _BackgroundPainter extends CustomPainter {
+  final Color color1;
+  final Color color2;
+  final Color color3;
+
+  _BackgroundPainter({
+    required this.color1,
+    required this.color2,
+    required this.color3,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+
+    // Draw organic shapes
+    // Top-left circle
+    paint.color = color1;
+    canvas.drawCircle(
+      Offset(size.width * 0.1, size.height * 0.15),
+      size.width * 0.3,
+      paint,
+    );
+
+    // Top-right circle
+    paint.color = color2;
+    canvas.drawCircle(
+      Offset(size.width * 0.85, size.height * 0.2),
+      size.width * 0.25,
+      paint,
+    );
+
+    // Bottom-left circle
+    paint.color = color3;
+    canvas.drawCircle(
+      Offset(size.width * 0.2, size.height * 0.85),
+      size.width * 0.35,
+      paint,
+    );
+
+    // Bottom-right circle
+    paint.color = color1;
+    canvas.drawCircle(
+      Offset(size.width * 0.9, size.height * 0.9),
+      size.width * 0.2,
+      paint,
+    );
+
+    // Center accent
+    paint.color = color2;
+    canvas.drawCircle(
+      Offset(size.width * 0.5, size.height * 0.5),
+      size.width * 0.15,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
