@@ -8,6 +8,7 @@ import '../../data/models/checklist.dart';
 import '../../data/models/checklist_item.dart';
 import '../../providers/checklist_details_provider.dart';
 import '../widgets/checklist_form_dialog.dart';
+import '../widgets/checklist_details_skeleton_loader.dart';
 
 class ChecklistDetailsScreen extends ConsumerStatefulWidget {
   final String checklistId;
@@ -106,7 +107,7 @@ class _ChecklistDetailsScreenState
       body: checklistDetailsAsync.when(
         data: (checklistWithItems) =>
             _buildContent(context, checklistWithItems),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const ChecklistDetailsSkeletonLoader(),
         error: (error, stack) => Center(
           child: Padding(
             padding: EdgeInsets.all(context.isMobile ? 16.0 : 24.0),

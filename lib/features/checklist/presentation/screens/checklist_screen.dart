@@ -8,6 +8,7 @@ import '../../data/models/checklist.dart';
 import '../../providers/checklist_provider.dart';
 import '../widgets/checklist_card.dart';
 import '../widgets/checklist_form_dialog.dart';
+import '../widgets/checklist_skeleton_loader.dart';
 
 class ChecklistScreen extends ConsumerStatefulWidget {
   const ChecklistScreen({super.key});
@@ -36,7 +37,7 @@ class _ChecklistScreenState extends ConsumerState<ChecklistScreen> {
         },
         child: checklistsAsync.when(
           data: (checklists) => _buildChecklistsList(context, checklists),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const ChecklistSkeletonLoader(),
           error: (error, stack) => Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
