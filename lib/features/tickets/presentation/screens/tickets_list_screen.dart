@@ -8,6 +8,7 @@ import '../../data/models/ticket.dart';
 import '../../providers/ticket_provider.dart';
 import '../widgets/ticket_card.dart';
 import '../widgets/ticket_form_dialog.dart';
+import '../widgets/tickets_skeleton_loader.dart';
 
 class TicketsListScreen extends ConsumerStatefulWidget {
   const TicketsListScreen({super.key});
@@ -34,7 +35,7 @@ class _TicketsListScreenState extends ConsumerState<TicketsListScreen> {
         },
         child: ticketsAsync.when(
           data: (tickets) => _buildTicketsList(context, tickets),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const TicketsSkeletonLoader(),
           error: (error, stack) => Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

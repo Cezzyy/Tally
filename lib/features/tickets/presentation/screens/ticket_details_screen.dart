@@ -8,6 +8,7 @@ import '../../data/models/ticket.dart';
 import '../../data/models/ticket_checklist_item.dart';
 import '../../providers/ticket_details_provider.dart';
 import '../widgets/ticket_form_dialog.dart';
+import '../widgets/ticket_details_skeleton_loader.dart';
 
 class TicketDetailsScreen extends ConsumerStatefulWidget {
   final String ticketId;
@@ -106,7 +107,7 @@ class _TicketDetailsScreenState extends ConsumerState<TicketDetailsScreen> {
       body: ticketDetailsAsync.when(
         data: (ticketWithChecklist) =>
             _buildContent(context, ticketWithChecklist),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const TicketDetailsSkeletonLoader(),
         error: (error, stack) => Center(
           child: Padding(
             padding: EdgeInsets.all(context.isMobile ? 16.0 : 24.0),
