@@ -1,9 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:talker_flutter/talker_flutter.dart';
-import '../../../../core/logging/app_logger.dart';
 import '../../../../shared/extensions/context_extensions.dart';
 import '../../../../shared/widgets/responsive_layout_shell.dart';
 
@@ -58,29 +55,53 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     }
   }
 
-  void _showLogsScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => TalkerScreen(talker: AppLogger.talker),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tally'),
-        centerTitle: context.isMobile,
-        actions: [
-          if (kDebugMode)
-            IconButton(
-              icon: const Icon(Icons.bug_report),
-              tooltip: 'View Logs',
-              onPressed: _showLogsScreen,
+        toolbarHeight: context.isMobile ? 72 : 80,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(context.isMobile ? 10 : 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    context.colorScheme.primaryContainer,
+                    context.colorScheme.secondaryContainer,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: context.colorScheme.primary.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.remove_done,
+                size: context.isMobile ? 32 : 36,
+                color: context.colorScheme.primary,
+              ),
             ),
-          if (!context.isMobile) const SizedBox(width: 8),
-        ],
+            SizedBox(width: context.isMobile ? 14 : 16),
+            Text(
+              'Tally',
+              style: TextStyle(
+                fontSize: context.isMobile ? 28 : 32,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.8,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: false,
+        titleSpacing: context.isMobile ? 16 : 24,
       ),
       body: ResponsiveLayoutShell(
         currentIndex: widget.currentIndex,
