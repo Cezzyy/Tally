@@ -6,6 +6,7 @@ import '../../../../shared/extensions/context_extensions.dart';
 import '../../providers/analytics_provider.dart';
 import '../widgets/stat_card.dart';
 import '../widgets/progress_card.dart';
+import '../widgets/home_skeleton_loader.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,7 @@ class HomeScreen extends ConsumerWidget {
       },
       child: analyticsAsync.when(
         data: (analytics) => _buildDashboard(context, analytics),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const HomeSkeletonLoader(),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
